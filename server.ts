@@ -1,4 +1,3 @@
-import { start } from "repl";
 import app from "./src/app";
 import { envConfig } from "./src/config/config";
 
