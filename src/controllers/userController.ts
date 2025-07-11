@@ -54,18 +54,18 @@ class UserController {
         //if yes --> email exists --> check password
         if(user.length == 0){
             res.status(404).json({
-                message: "User not found"
+                message: "User not found 😭"
             });
     
         }else{
             const isEqual = bcrypt.compareSync(password, user[0].password);
             if (!isEqual){
                 res.status(400).json({
-                    message : "Invalid password"
+                    message : "Invalid password 🥲"
                 })
             }else{
                 res.status(200).json({
-                    message : "User logged in successfully"
+                    message : "User logged in successfully 😁"
                 })
             }
         }
