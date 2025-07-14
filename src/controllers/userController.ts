@@ -1,6 +1,7 @@
 import {Request, Response} from 'express';
 import User from  '../database/models/userModel';
 import bcrypt from 'bcrypt'
+import generateToken from '../services/generateToken';
 
 
 
@@ -37,7 +38,7 @@ class UserController {
         }
 
         //check if user exists with the provided email
-        const user = await User.findAll({  //find --> findAll --aray of object, findById -> findByPk --object
+        const [user] = await User.findAll({  //find --> findAll --aray of object, findById -> findByPk --object
             where : {
                 email : email
             }
@@ -52,20 +53,25 @@ class UserController {
         //  }]
 
         //if yes --> email exists --> check password
-        if(user.length == 0){
+        if(!user){
             res.status(404).json({
                 message: "User not found 😭"
             });
     
         }else{
-            const isEqual = bcrypt.compareSync(password, user[0].password);
+            const isEqual = bcrypt.compareSync(password, user.password);
             if (!isEqual){
+
                 res.status(400).json({
                     message : "Invalid password 🥲"
                 })
             }else{
+                //token generate (jwt)
+                const token = generateToken(user.id)
+                //send response
                 res.status(200).json({
-                    message : "User logged in successfully 😁"
+                    message : "User logged in successfully 😁",
+                    token : token
                 })
             }
         }
