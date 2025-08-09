@@ -37,8 +37,10 @@ class User extends Model{
     })
     declare role:string
 
+
+    // for otp verification
     @Column({
-        type : DataType.STRING
+        type: DataType.STRING
     })
     declare otp:string
 
