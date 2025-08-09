@@ -162,6 +162,34 @@ class UserController {
         const otpGeneratedTime = data.otpGeneratedTime;
         checkOtpExpiration(res, otpGeneratedTime,120000) // 2 minutes threshold
     }
+
+    //reset password:
+    static async resetPassword(req:Request, res:Response){
+        const {newPassword, confirmPassword, email} = req.body;
+        //Basic validation
+        if(!newPassword || !confirmPassword || !email){
+            sendResponse(res,400, "please provide newpassword and confirm password" )
+            return;
+        }
+
+        //confirm passwords matches
+        if(newPassword !== confirmPassword){
+            sendResponse(res, 400, "newPassword and confirmPassword must be same");
+            return;
+        }
+
+        //find the user with the email
+        const user = await findData(User, email);
+        if(!user){
+            sendResponse(res, 404, "no email with that user found");
+            return;
+        }
+
+        //new password hasing and saving
+        user.password = bcrypt.hashSync(newPassword, 12);
+        await user.save();
+        sendResponse(res, 200, "Password reset successfully")
+    } 
 }
 
 
