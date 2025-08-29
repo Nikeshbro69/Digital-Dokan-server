@@ -2,10 +2,11 @@
 
 import { Sequelize } from "sequelize-typescript";
 import { envConfig } from "../config/config";
-import User from "./models/userModel";
+import Product from "./models/productModel";
+import Category from "./models/categoryModel";
 // Ensure that the environment variables are loaded
 
-console.log(envConfig.port)
+
 const sequelize = new Sequelize(envConfig.connectionString as string,{
     models: [__dirname + '/models'], // Path to your models yesko bare obsidian ma cha
 });
@@ -27,6 +28,10 @@ try {
 sequelize.sync({force : false,alter:false}).then(()=>{
     console.log("Migrrated successfully");
 })
+
+// Relationships
+Product.belongsTo(Category)
+Category.hasOne(Product)
 
 
 export default sequelize;
