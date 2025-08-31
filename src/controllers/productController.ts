@@ -1,19 +1,20 @@
-import { promises } from "dns";
+
 import { Request, Response } from "express";
 import Product from "../database/models/productModel";
-import { Model } from "sequelize-typescript";
+
 import Category from "../database/models/categoryModel";
 
- interface ProductRequest extends Request{
-    file? : {
-        filename : string
-    }
- }
+//  interface ProductRequest extends Request{
+//     file? : {
+//         filename : string
+//     }
+//  }
 
 class ProductController{
 
-    async createProduct(req:ProductRequest, res:Response):Promise<void>{
+    async createProduct(req:Request, res:Response):Promise<void>{
         const {productName, productDescrtption,productPrice, productTotalStock, discount, categoryId} = req.body;
+        console.log(req.file)
         const filename = req.file ? req.file.filename : "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.dreamstime.com%2Fproduct-icon-symbol-creative-sign-quality-control-icons-collection-filled-flat-computer-mobile-illustration-logo-image150923733&psig=AOvVaw2lXP2zJvG1YGDOQR3mDK0x&ust=1756582086222000&source=images&cd=vfe&opi=89978449&ved=0CBUQjRxqFwoTCLDS7bngsI8DFQAAAAAdAAAAABAE" 
         if(!productName || !productDescrtption || !productPrice || !productTotalStock || !categoryId){
             res.status(400).json({
