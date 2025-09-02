@@ -1,4 +1,4 @@
-import { Table, Column, Model, DataType, AllowNull, Validate } from "sequelize-typescript";
+import { Table, Column, Model, DataType} from "sequelize-typescript";
 // import { OrderStatus } from "../../globals/types";
 
 @Table({

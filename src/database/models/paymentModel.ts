@@ -1,5 +1,5 @@
 import { Table, Column, Model, DataType, AllowNull, Validate, PrimaryKey } from "sequelize-typescript";
-import { OrderStatus, PaymentMethod, paymentStatus } from "../../globals/types";
+import {PaymentMethod, paymentStatus } from "../../globals/types";
 
 @Table({
     tableName : "payment",
