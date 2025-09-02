@@ -2,6 +2,7 @@ import express, {Router} from 'express';
 import CategoryController from '../controllers/categoryController';
 import userMiddleware, {Role} from '../middleware/userMiddleware';
 const router: Router = express.Router();
+import errorHandler from '../services/errorHandler';
 
 
 
@@ -11,11 +12,11 @@ router.route("/")
 .post(
     userMiddleware.isUserLoggedIn, 
     userMiddleware.accessTo(Role.Admin), 
-    CategoryController.addCategory
+    errorHandler(CategoryController.addCategory)
 );
 router.route("/:id")
-.delete(userMiddleware.accessTo(Role.Admin),CategoryController.deleteCategory)
-.patch(userMiddleware.accessTo(Role.Admin), CategoryController.updateCategory);
+.delete(userMiddleware.accessTo(Role.Admin),errorHandler(CategoryController.deleteCategory))
+.patch(userMiddleware.accessTo(Role.Admin),errorHandler(CategoryController.updateCategory));
 
 
 export default router;
