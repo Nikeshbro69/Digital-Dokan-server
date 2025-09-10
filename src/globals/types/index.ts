@@ -13,7 +13,7 @@ export enum PaymentMethod {
     COD = "cod"
  }
 
- export enum paymentStatus {
+ export enum PaymentStatus {
     Paid = "paid",
     Unpaid = "unpaid"
  }
