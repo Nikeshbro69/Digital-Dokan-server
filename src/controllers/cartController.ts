@@ -24,8 +24,10 @@ class CartController{
                 productId
             }
         })
+        console.log("hahaha",cartOfUser)
         if(cartOfUser){
             cartOfUser.quantity = cartOfUser.quantity + quantity
+            
             cartOfUser.save() 
         }else{
             await Cart.create({
