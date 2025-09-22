@@ -34,7 +34,7 @@ class UserController {
             return;
         }
 
-        await User.create({
+        const user = await User.create({
             username,
             email,
             password : bcrypt.hashSync(password, 10) // Hashing the password
@@ -45,7 +45,8 @@ class UserController {
             text: `Hello ${username}, welcome to our service!`
         });
         res.status(201).json({
-            message : "User registered successfully"
+            message : "User registered successfully",
+            data : user
         })
     }
     
