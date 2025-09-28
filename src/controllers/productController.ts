@@ -13,10 +13,10 @@ import Category from "../database/models/categoryModel";
 class ProductController{
 
     async createProduct(req:Request, res:Response):Promise<void>{
-        const {productName, productDescrtption,productPrice, productTotalStock, discount, categoryId} = req.body;
+        const {productName, productDescription,productPrice, productTotalStock, discount, categoryId} = req.body;
         console.log(req.file)
         const filename = req.file ? req.file.filename : "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.dreamstime.com%2Fproduct-icon-symbol-creative-sign-quality-control-icons-collection-filled-flat-computer-mobile-illustration-logo-image150923733&psig=AOvVaw2lXP2zJvG1YGDOQR3mDK0x&ust=1756582086222000&source=images&cd=vfe&opi=89978449&ved=0CBUQjRxqFwoTCLDS7bngsI8DFQAAAAAdAAAAABAE" 
-        if(!productName || !productDescrtption || !productPrice || !productTotalStock || !categoryId){
+        if(!productName || !productDescription || !productPrice || !productTotalStock || !categoryId){
             res.status(400).json({
                 message : "Please provide productName, productDescrtption,productPrice, productTotalStock, categoryId"
             })
@@ -24,7 +24,7 @@ class ProductController{
         }
         await Product.create({
             productName, 
-            productDescrtption,
+            productDescription,
             productPrice, 
             productTotalStock, 
             discount : discount || 0,

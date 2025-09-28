@@ -26,7 +26,7 @@ class Product extends Model{
         //string character limitation is 255 and Text is unlimited
         type : DataType.TEXT
     })
-    declare productDescrtption:string
+    declare productDescription:string
 
     @Column({
         type : DataType.INTEGER,
