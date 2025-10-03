@@ -3,6 +3,7 @@ import Order from '../database/models/orderModel';
 import OrderDetails from '../database/models/orderDetails';
 import payment from '../database/models/paymentModel';
 import { PaymentMethod, PaymentStatus } from '../globals/types';
+import Cart from '../database/models/cartModel';
 import axios from 'axios';
 
 interface Iproduct{
@@ -20,10 +21,10 @@ class OrderController {
     static async createOrder(req:OrderRequest, res:Response):Promise<void>{
         
         const userId = req.user.id
-        const {phoneNumber, shippingAddress, totalAmount,paymentMethod} = req.body
+        const {phoneNumber, addressLine, totalAmount, paymentMethod, firstName, lastName, email, city, state, zipCode} = req.body
         const products : Iproduct[] = req.body.products
        
-        if(!phoneNumber || !shippingAddress || !totalAmount || products.length === 0){
+        if(!phoneNumber || !addressLine || !totalAmount || products.length === 0  || !firstName  || !lastName || !email || !city || !state || !zipCode){
             res.status(400).json({
                 message : "please provide phoneNumber, shippingAddress, totalAmount"
             })
@@ -32,18 +33,33 @@ class OrderController {
         //for order table
         const orderData = await Order.create({
             phoneNumber,
-            shippingAddress,
+            addressLine,
             totalAmount,
-            userId
+            userId,
+            firstName,
+            lastName,
+            email,
+            city,
+            state,
+            zipCode
         }) 
         
+        let data;
         //for orderDetails table
         products.forEach(async function(product){
-            await OrderDetails.create({
+            data = await OrderDetails.create({
                 quantity : product.productQty,
                 productId : product.productId,
                 orderId : orderData.id
 
+            })
+
+            // order create gare pachi cart bata pani remove garna paro
+            await Cart.destroy({
+                where : {
+                    productId : product.productId,
+                    userId : userId
+                }
             })
         })
 
@@ -71,16 +87,18 @@ class OrderController {
             const khaltiResponse = response.data
             paymentData.pidx = khaltiResponse.pidx
             paymentData.save()
-            res.status(201).json({
+            res.status(200).json({
             message : "order created successfully",
             url : khaltiResponse.payment_url,
-            pidx : khaltiResponse.pidx
+            pidx : khaltiResponse.pidx,
+            data
         })
         }else if(paymentMethod == PaymentMethod.Esewa){
             //esewa logic
         }else{
             res.status(201).json({
             message : "order created successfully",
+            data
             })
         }
         return
