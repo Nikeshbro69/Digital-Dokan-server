@@ -1,6 +1,7 @@
 import {Request,Response} from 'express'
 import Cart from '../database/models/cartModel'
 import Product from '../database/models/productModel';
+import Category from '../database/models/categoryModel';
 
 interface AuthRequest extends Request{
     user? : {
@@ -36,8 +37,26 @@ class CartController{
                 quantity
             })
         }
+
+        //cart ma add bhako item response ma pathako
+        const [cartData] = await Cart.findAll({
+            where : {
+                userId
+            },
+            include : [
+                {
+                    model : Product,
+                    include : [
+                        {
+                            model : Category
+                        }
+                    ]
+                }
+            ]
+        })
         res.status(200).json({
-            message : "Product added to cart"
+            message : "Product added to cart",
+            data : cartData
         })
     }
 
@@ -56,11 +75,12 @@ class CartController{
             ]
         })
         if(cartItems.length === 0){
-            res.status(200).json({
+            res.status(400).json({
                 message : "Your cart is empty"
             })
         }else{
             res.status(200).json({
+                message : "Cart items fetched successfully",
                 data : cartItems
             })
         }
@@ -73,7 +93,7 @@ class CartController{
         //check if that product exist in that user cart
         const product = await Product.findOne({
             where : {
-                productId
+                id : productId
             }
         })
         if(!product){
