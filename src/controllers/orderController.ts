@@ -5,6 +5,10 @@ import payment from '../database/models/paymentModel';
 import { PaymentMethod, PaymentStatus } from '../globals/types';
 import Cart from '../database/models/cartModel';
 import axios from 'axios';
+import Payment from '../database/models/paymentModel';
+import Product from '../database/models/productModel';
+import { Model } from 'sequelize-typescript';
+import Category from '../database/models/categoryModel';
 
 interface Iproduct{
     productId: string;
@@ -30,6 +34,15 @@ class OrderController {
             })
             return
         }
+         
+        
+        let data;
+
+        //for payment table
+        const paymentData= await payment.create({
+            paymentMethod : paymentMethod,
+        })
+
         //for order table
         const orderData = await Order.create({
             phoneNumber,
@@ -41,10 +54,10 @@ class OrderController {
             email,
             city,
             state,
-            zipCode
-        }) 
+            zipCode,
+            paymentId : paymentData.id
+        })
         
-        let data;
         //for orderDetails table
         products.forEach(async function(product){
             data = await OrderDetails.create({
@@ -63,13 +76,8 @@ class OrderController {
             })
         })
 
-        //for payment table
-        let paymentData;
-       
-            paymentData= await payment.create({
-                paymentMethod : paymentMethod,
-                orderId : orderData.id
-            })
+        
+
         if(paymentMethod == PaymentMethod.Khalti){
 
             const data = {
@@ -134,6 +142,68 @@ class OrderController {
           message : "Payment not verified or cancelled"
         })
       }
+    }
+
+    static async fetchMyOrders(req:OrderRequest, res:Response):Promise<void>{
+        const userId = req.user?.id
+        const orders = await Order.findAll({
+            where : {
+                userId
+            },
+            attributes : ["totalAmount","id","orderStatus"],
+            include : {
+                model : Payment,
+                attributes : ["paymentMethod", "paymentStatus"]
+            }
+        })
+        if(orders.length > 0){
+            res.status(200).json({
+                message : "order fetched successfully",
+                data : orders
+            })
+        }else{
+            res.status(200).json({
+                message : "No order found",
+                data : []
+            })
+        }
+    }
+
+    static async fetchMyOrderDetail(req:OrderRequest, res:Response):Promise<void>{
+        const orderId = req.params.id
+        const userId = req.user?.id
+        const orders = await OrderDetails.findAll({
+            where : {
+                orderId
+            },
+            include : [{
+                    model : Order,
+                    include : [{
+                        model : Payment,
+                        attributes : ["paymentMethod", "paymentStatus"]
+                    }],
+                    attributes : ["orderStatus","AddressLine","State","City","totalAmount","phoneNumber",]
+                },
+                {
+                    model : Product,
+                    include : [{
+                        model : Category
+                    }],
+                    attributes : ["productImageUrl", "productName","productPrice"]
+                }
+            ]
+        })
+        if(orders.length > 0){
+            res.status(200).json({
+                message : "order fetched successfully",
+                data : orders
+            })
+        }else{
+            res.status(200).json({
+                message : "No order found",
+                data : []
+            })
+        }
     }
 }
 
