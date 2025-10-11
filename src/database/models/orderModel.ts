@@ -32,22 +32,22 @@ class Order extends Model{
     @Column ({
         type : DataType.STRING
     })
-    declare AddressLine : string
+    declare addressLine : string
 
      @Column ({
         type : DataType.STRING
     })
-    declare City : string
+    declare city : string
 
      @Column ({
         type : DataType.STRING
     })
-    declare State : string
+    declare state : string
 
      @Column ({
         type : DataType.STRING,
     })
-    declare ZipCode : string
+    declare zipCode : string
 
 
     @Column ({

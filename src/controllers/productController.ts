@@ -14,6 +14,7 @@ class ProductController{
 
     async createProduct(req:Request, res:Response):Promise<void>{
         const {productName, productDescription,productPrice, productTotalStock, discount, categoryId} = req.body;
+        console.log(req.body)
         console.log(req.file)
         const filename = req.file ? req.file.filename : "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.dreamstime.com%2Fproduct-icon-symbol-creative-sign-quality-control-icons-collection-filled-flat-computer-mobile-illustration-logo-image150923733&psig=AOvVaw2lXP2zJvG1YGDOQR3mDK0x&ust=1756582086222000&source=images&cd=vfe&opi=89978449&ved=0CBUQjRxqFwoTCLDS7bngsI8DFQAAAAAdAAAAABAE" 
         if(!productName || !productDescription || !productPrice || !productTotalStock || !categoryId){
