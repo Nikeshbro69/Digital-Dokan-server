@@ -2,7 +2,7 @@ import {Request, Response} from 'express'
 import Order from '../database/models/orderModel';
 import OrderDetails from '../database/models/orderDetails';
 import payment from '../database/models/paymentModel';
-import { PaymentMethod, PaymentStatus } from '../globals/types';
+import { OrderStatus, PaymentMethod, PaymentStatus } from '../globals/types';
 import Cart from '../database/models/cartModel';
 import axios from 'axios';
 import Payment from '../database/models/paymentModel';
@@ -18,6 +18,10 @@ interface OrderRequest extends Request{
     user : {
         id : string
     }
+}
+
+class OrderWithPaymentId extends Order{
+    declare paymentId : string | null
 }
 
 class OrderController {
@@ -205,6 +209,96 @@ class OrderController {
             })
         }
     }
+
+    static async cancelMyOrder(req:OrderRequest, res:Response):Promise<void>{
+        const userId = req.user?.id
+        //grabs the order's id which user wants to cancel
+        const orderId = req.params.id
+        //check wheter the order belongs to that user or not
+        const [order] = await Order.findAll({
+            where : {
+                userId : userId,
+                id : orderId
+            }
+        })
+        console.log(order.orderStatus, "Mugi")
+        if(!order){
+            res.status(400).json({
+                message : "No order with that id"
+            })
+            return
+        }
+
+        //check order whether the order is cancelable or not
+        if(order.orderStatus === OrderStatus.Ontheway || order.orderStatus === OrderStatus.Preparation){
+            res.status(403).json({
+                message : "you cannot cancel the order it is on the way or already prepared"
+            })
+            return 
+        }
+        await Order.update({orderStatus : OrderStatus.Cancelled},{
+            where : {
+                id : orderId
+            }
+        })
+        res.status(200).json({
+            message : "Order cancelled successfully"
+        })
+    }
+
+
+
+
+    //Admin
+    static async changeOrderStatus(req:OrderRequest, res:Response):Promise<void>{
+        const orderId = req.params.id
+        const {orderStatus} = req.body
+        if(!orderId || !orderStatus){
+            res.status(400).json({
+                message : "Please provide orderId and orderStatus"
+            })
+            return
+        }
+        await Order.update({orderStatus : OrderStatus},{
+            where : {
+                id : orderId
+            }
+        })
+        res.status(200).json({
+            message : "OrderStatus updated successfully"
+        })
+    }
+    static async deleteOrder(req:OrderRequest, res:Response):Promise<void>{
+        const orderId = req.params.id
+        const order = await Order.findByPk(orderId) as OrderWithPaymentId
+        const paymentId = order?.paymentId
+        if(!order){
+            res.status(404).json({
+                message : "Yo don't have that orderId order"
+            })
+            return 
+        }
+        await OrderDetails.destroy({
+            where : {
+                orderId : orderId
+            }
+        })
+        await Payment.destroy({
+            where :{
+                id : paymentId
+            }
+        })
+        await Order.destroy({
+            where : {
+                id : orderId
+            }
+        })
+
+        res.status(200).json({
+            message : "Order deleted successfully"
+        })
+    }
+
 }
 
 export default OrderController;

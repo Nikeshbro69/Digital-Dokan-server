@@ -39,7 +39,7 @@ class CartController{
         }
 
         //cart ma add bhako item response ma pathako
-        const [cartData] = await Cart.findAll({
+        const cartData = await Cart.findAll({
             where : {
                 userId
             },
