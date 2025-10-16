@@ -15,8 +15,15 @@ router.route("/")
     errorHandler(CategoryController.addCategory)
 );
 router.route("/:id")
-.delete(userMiddleware.accessTo(Role.Admin),errorHandler(CategoryController.deleteCategory))
-.patch(userMiddleware.accessTo(Role.Admin),errorHandler(CategoryController.updateCategory));
+.delete(
+    userMiddleware.isUserLoggedIn,
+    userMiddleware.accessTo(Role.Admin),
+    errorHandler(CategoryController.deleteCategory))
+
+.patch(
+    userMiddleware.isUserLoggedIn,
+    userMiddleware.accessTo(Role.Admin),
+    errorHandler(CategoryController.updateCategory));
 
 
 export default router;
