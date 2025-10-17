@@ -205,6 +205,38 @@ class UserController {
         await user.save();
         sendResponse(res, 200, "Password reset successfully")
     } 
+
+    //admin
+    static async fetchUsers(req:Request, res:Response){
+        const users = await User.findAll({
+            attributes : ["id","username","email"]
+        })
+        res.status(200).json({
+            message : "User fetched Successfully",
+            data : users
+        })
+    }
+
+    static async deleteUser(req:Request, res:Response){
+        const {id} = req.params
+        console.log(id,"Bhadwa madarjat")
+        if(!id){
+            res.status(400).json({
+                message : "please provide Id"
+            })
+            return
+        }
+        const user = await User.findByPk(id)
+        await User.destroy({
+            where : {
+                id
+            }
+        })
+        res.status(200).json({
+            message : "User deleted Successfully",
+            data : user
+        })
+    }
 }
 
 

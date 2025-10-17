@@ -7,7 +7,6 @@ import Cart from '../database/models/cartModel';
 import axios from 'axios';
 import Payment from '../database/models/paymentModel';
 import Product from '../database/models/productModel';
-import { Model } from 'sequelize-typescript';
 import Category from '../database/models/categoryModel';
 
 interface Iproduct{
