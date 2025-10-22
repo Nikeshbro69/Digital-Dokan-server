@@ -31,8 +31,8 @@ function startServer(){
     io.on("connection",(socket)=>{
         console.log("Client connected successfully")
         console.log(socket.id)
-        const token = socket.handshake.headers.token //jwt token
-        console.log(token)
+        const token = socket.handshake.auth.token //jwt token
+        console.log(token, "token hai")
         if(token){
             jwt.verify(token as string, envConfig.jwtSecretKey as string, async(err:any, result:any)=>{
                 if(err){
@@ -53,6 +53,7 @@ function startServer(){
             socket.emit("error","please provide token")
         }
 
+        console.log(onlineUsers, "online")
         //day 56 data listener
         socket.on("updateOrderStatus", async(data)=>{
             const {status, orderId, userId} = data;
@@ -69,7 +70,8 @@ function startServer(){
                         }
                     }
                 )
-                io.to(findUser.socketId).emit("success","Order status Updated")
+                console.log(status,"socket ko status")
+                io.to(findUser.socketId).emit("statusUpdated",data)
             }else{
                 socket.emit("error", "User is not online")
             }

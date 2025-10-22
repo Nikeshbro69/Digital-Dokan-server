@@ -20,6 +20,14 @@ router.route("/verify-pidx").post(userMiddleware.isUserLoggedIn, errorHandler(Or
 //Admin ko hai
 router.route("/admin/change-status/:id").patch(userMiddleware.isUserLoggedIn, userMiddleware.accessTo(Role.Admin), errorHandler(OrderController.changeOrderStatus))
 
+//Admin kai ho hai yo pani
+router.route("/all")
+.get(
+    userMiddleware.isUserLoggedIn, 
+    userMiddleware.accessTo(Role.Admin),
+    errorHandler(OrderController.fetchAllOrders)
+);
+
 //Admin ko hai
 router.route("/admin/delete-order/:id").post(userMiddleware.isUserLoggedIn, userMiddleware.accessTo(Role.Admin), errorHandler(OrderController.deleteOrder))
 

@@ -107,7 +107,7 @@ class OrderController {
         }else if(paymentMethod == PaymentMethod.Esewa){
             //esewa logic
         }else{
-            res.status(201).json({
+            res.status(200).json({
             message : "order created successfully",
             data
             })
@@ -185,7 +185,7 @@ class OrderController {
                         model : Payment,
                         attributes : ["paymentMethod", "paymentStatus"]
                     }],
-                    attributes : ["orderStatus","addressLine","state","city","totalAmount","phoneNumber","firstName","lastName"]
+                    attributes : ["orderStatus","addressLine","state","city","totalAmount","phoneNumber","firstName","lastName","userId"]
                 },
                 {
                     model : Product,
@@ -296,6 +296,26 @@ class OrderController {
         res.status(200).json({
             message : "Order deleted successfully"
         })
+    }
+    static async fetchAllOrders(req:OrderRequest, res:Response):Promise<void>{
+        const orders = await Order.findAll({
+            attributes : ["totalAmount","id","orderStatus"],
+            include : {
+                model : Payment,
+                attributes : ["paymentMethod", "paymentStatus"]
+            }
+        })
+        if(orders.length > 0){
+            res.status(200).json({
+                message : "order fetched successfully",
+                data : orders
+            })
+        }else{
+            res.status(200).json({
+                message : "No order found",
+                data : []
+            })
+        }
     }
 
 }
